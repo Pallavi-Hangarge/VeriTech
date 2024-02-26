@@ -1,0 +1,124 @@
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
+import java.util.Scanner;
+
+class SnakeGame {
+
+    private static final int GRID_SIZE = 10;
+    private static char[][] grid;
+    private static int snakeLength;
+    private static Queue<Point> snake;
+    private static Point food;
+    private static boolean gameOver;
+
+    static class Point {
+        int x, y;
+
+        Point(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    public static void main(String[] args) {
+        initializeGame();
+        printGrid();
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (!gameOver) {
+            System.out.print("Enter direction (W/A/S/D): ");
+            char direction = scanner.next().toUpperCase().charAt(0);
+
+            moveSnake(direction);
+            checkCollision();
+            checkFood();
+            printGrid();
+        }
+
+        System.out.println("Game Over! Your score: " + (snakeLength - 1));
+        scanner.close();
+    }
+
+    private static void initializeGame() {
+        grid = new char[GRID_SIZE][GRID_SIZE];
+        snakeLength = 1;
+        snake = new LinkedList<>();
+        snake.add(new Point(GRID_SIZE / 2, GRID_SIZE / 2));
+        food = generateFood();
+        gameOver = false;
+    }
+
+    private static void printGrid() {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
+                if (snake.contains(new Point(i, j))) {
+                    System.out.print("O ");
+                } else if (food.x == i && food.y == j) {
+                    System.out.print("F ");
+                } else {
+                    System.out.print(". ");
+                }
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
+    private static Point generateFood() {
+        Random random = new Random();
+        int x, y;
+        do {
+            x = random.nextInt(GRID_SIZE);
+            y = random.nextInt(GRID_SIZE);
+        } while (snake.contains(new Point(x, y)));
+        return new Point(x, y);
+    }
+
+    private static void moveSnake(char direction) {
+        Point head = snake.peek();
+        Point newHead = new Point(head.x, head.y);
+
+        switch (direction) {
+            case 'W':
+                newHead.x = (newHead.x - 1 + GRID_SIZE) % GRID_SIZE;
+                break;
+            case 'A':
+                newHead.y = (newHead.y - 1 + GRID_SIZE) % GRID_SIZE;
+                break;
+            case 'S':
+                newHead.x = (newHead.x + 1) % GRID_SIZE;
+                break;
+            case 'D':
+                newHead.y = (newHead.y + 1) % GRID_SIZE;
+                break;
+        }
+
+        snake.add(newHead);
+        if (!newHead.equals(food)) {
+            snake.poll();
+        } else {
+            food = generateFood();
+            snakeLength++;
+        }
+    }
+
+    private static void checkCollision() {
+        Point head = snake.peek();
+        for (Point p : snake) {
+            if (p != head && p.x == head.x && p.y == head.y) {
+                gameOver = true;
+                break;
+            }
+        }
+    }
+
+    private static void checkFood() {
+        Point head = snake.peek();
+        if (head.x == food.x && head.y == food.y) {
+            food = generateFood();
+            snakeLength++;
+        }
+    }
+}
