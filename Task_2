@@ -1,0 +1,104 @@
+import java.util.Scanner;
+
+public class ATMProject {
+    public static void main(String[] args) {
+        // Create a user
+        User user = new User("123456", "7890", 1000.0);
+
+        // Create an ATM with the user
+        ATM atm = new ATM(user);
+
+        // Start the ATM
+        atm.startATM();
+    }
+}
+
+class User {
+    private String userID;
+    private String userPIN;
+    private double accountBalance;
+
+    // Constructor
+    public User(String userID, String userPIN, double accountBalance) {
+        this.userID = userID;
+        this.userPIN = userPIN;
+        this.accountBalance = accountBalance;
+    }
+
+    // Getters
+    public String getUserID() {
+        return userID;
+    }
+
+    public String getUserPIN() {
+        return userPIN;
+    }
+
+    public double getAccountBalance() {
+        return accountBalance;
+    }
+
+    // Method to update account balance
+    public void updateAccountBalance(double amount) {
+        accountBalance += amount;
+    }
+}
+
+class ATM {
+    private User currentUser;
+
+    // Constructor
+    public ATM(User user) {
+        this.currentUser = user;
+    }
+
+    // Method to check balance
+    public void checkBalance() {
+        System.out.println("Your current balance: $" + currentUser.getAccountBalance());
+    }
+
+    // Method to withdraw money
+    public void withdraw(double amount) {
+        if (amount > currentUser.getAccountBalance()) {
+            System.out.println("Insufficient funds.");
+        } else {
+            currentUser.updateAccountBalance(-amount);
+            System.out.println("Withdrawal successful. Remaining balance: $" + currentUser.getAccountBalance());
+        }
+    }
+
+    // Method to deposit money
+    public void deposit(double amount) {
+        currentUser.updateAccountBalance(amount);
+        System.out.println("Deposit successful. Updated balance: $" + currentUser.getAccountBalance());
+    }
+
+    // Main method for user interaction
+    public void startATM() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter user ID: ");
+        String userIDInput = scanner.nextLine();
+
+        System.out.print("Enter PIN: ");
+        String userPINInput = scanner.nextLine();
+
+        if (userIDInput.equals(currentUser.getUserID()) && userPINInput.equals(currentUser.getUserPIN())) {
+            System.out.println("Authentication successful. Welcome to the ATM!");
+
+            // Provide options for operations
+            while (true) {
+                System.out.println("\nSelect an option:");
+                System.out.println("1. Check Balance");
+                System.out.println("2. Withdraw Money");
+                System.out.println("3. Deposit Money");
+                System.out.println("4. Exit");
+
+                int choice = scanner.nextInt();
+
+                switch (choice) {
+                    case 1:
+                        checkBalance();
+                        break;
+                    case 2:
+                        System.out.print
